@@ -1,4 +1,8 @@
 notifications:
   email: false
 language: c
+addons:
+  apt:
+    packages:
+      - elinks
 script: make -C external
