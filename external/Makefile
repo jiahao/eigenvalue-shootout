@@ -2,7 +2,7 @@ CC=gcc
 FC=gfortran
 CFLAGS=-O3 -fPIC
 FFLAGS=$(CFLAGS)
-#LDFLAGS=-shared
+LDFLAGS=
 
 #How to link LAPACK library
 LAPACK=-llapack
@@ -17,6 +17,8 @@ os:=$(shell uname -s)
 ifeq ($(os),Linux)
 	shared_lib_ext=so
 	evsl_infile=makefile.in_Linux.example
+	LAPACK+=-lm
+	LDFLAGS+=-Wl,-rpath=$(CURDIR)/SuiteSparse/lib -Wl,-rpath=$(CURDIR)/lib -Wl,--no-undefined
 endif
 ifeq ($(os),Darwin)
 	shared_lib_ext=dylib
@@ -74,7 +76,7 @@ EVSL_$(EVSL_VER): $(srccache)/evsl.zip
 $(evsl_lib): EVSL_$(EVSL_VER)
 	mkdir -p lib
 	cd EVSL_$(EVSL_VER)/SRC && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS) $(LDFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)" && \
-		$(CC) $(LDFLAGS) -shared -Wl,-soname,liblancheb.so.1 -o ../../lib/liblancheb.so *.o
+		$(CC) $(LDFLAGS) -shared -Wl,-soname,liblancheb.so.1 -o ../../lib/liblancheb.so *.o $(LAPACK) $(BLAS)
 
 EVSL_1.0/TESTS_Lap/LapPLanR.ex: $(evsl_lib)
 	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
@@ -82,18 +84,18 @@ EVSL_1.0/TESTS_Lap/LapPLanR.ex: $(evsl_lib)
 
 EVSL_1.0/TESTS_Lap/LapPLanN.ex: $(evsl_lib)
 	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
-		-f makefileP LapPLanN.ex && ./LapPlanN.ex
+		-f makefileP LapPLanN.ex && ./LapPLanN.ex
 
 EVSL_1.0/TESTS_Lap/LapPSI.ex: $(evsl_lib)
 	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
 		-f makefileP LapPSI.ex   && ./LapPSI.ex
 
 EVSL_1.0/TESTS_Lap/LapRLanR.ex: $(evsl_lib) $(suitesparse_lib)
-	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC) $(LDFLAGS) -Wl,--no-undefined" LIBLAPACK="$(LAPACK) $(BLAS)" \
 		EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanR.ex && ./LapRLanR.ex
 
 EVSL_1.0/TESTS_Lap/LapRLanN.ex: $(evsl_lib) $(suitesparse_lib)
-	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC) $(LDFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)" \
 		EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanN.ex && ./LapRLanN.ex
 
 evsl_tested: $(evsl_lib) EVSL_1.0/TESTS_Lap/LapPLanR.ex EVSL_1.0/TESTS_Lap/LapPLanN.ex EVSL_1.0/TESTS_Lap/LapPSI.ex EVSL_1.0/TESTS_Lap/LapRLanR.ex EVSL_1.0/TESTS_Lap/LapRLanN.ex
