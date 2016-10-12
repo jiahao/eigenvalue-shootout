@@ -1,0 +1,4 @@
+notifications:
+  email: false
+language: c
+script: make -C external
