@@ -1,7 +1,8 @@
 CC=gcc
 FC=gfortran
-CFLAGS=-O3 -Wall -fPIC
+CFLAGS=-O3 -fPIC
 FFLAGS=$(CFLAGS)
+#LDFLAGS=-shared
 
 #How to link LAPACK library
 LAPACK=-llapack
@@ -25,7 +26,7 @@ endif
 srccache = srccache
 suitesparse_dl=SuiteSparse-$(SUITESPARSE_VER).tar.gz
 suitesparse_lib=$(CURDIR)/SuiteSparse/lib/libsuitesparseconfig.$(shared_lib_ext)
-evsl_lib=$(CURDIR)/EVSL_$(EVSL_VER)/liblancheb.a
+evsl_lib=$(CURDIR)/lib/liblancheb.$(shared_lib_ext)
 
 #Variables to patch over EVSL 1.0 build system
 EXTLIB=$(CURDIR)/SuiteSparse
@@ -71,7 +72,9 @@ EVSL_$(EVSL_VER): $(srccache)/evsl.zip
 	cd EVSL_$(EVSL_VER) && mv makefile.in makefile.orig && mv $(evsl_infile) makefile.in
 
 $(evsl_lib): EVSL_$(EVSL_VER)
-	cd EVSL_$(EVSL_VER) && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)"
+	mkdir -p lib
+	cd EVSL_$(EVSL_VER)/SRC && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS) $(LDFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)" && \
+		$(CC) $(LDFLAGS) -shared -Wl,-soname,liblancheb.so.1 -o ../../lib/liblancheb.so *.o
 
 EVSL_1.0/TESTS_Lap/LapPLanR.ex: $(evsl_lib)
 	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
