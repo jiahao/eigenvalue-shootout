@@ -12,11 +12,19 @@ BLAS=-lblas
 EVSL_VER=1.0
 SUITESPARSE_VER=4.5.3
 
-SHARED_LIB_EXT=dylib
+os:=$(shell uname -s)
+ifeq ($(os),Linux)
+	shared_lib_ext=so
+	evsl_infile=makefile.in_Linux.example
+endif
+ifeq ($(os),Darwin)
+	shared_lib_ext=dylib
+	evsl_infile=makefile.in_MacOS.example
+endif
 
 srccache = srccache
 suitesparse_dl=SuiteSparse-$(SUITESPARSE_VER).tar.gz
-suitesparse_lib=$(CURDIR)/SuiteSparse/lib/libsuitesparseconfig.$(SHARED_LIB_EXT)
+suitesparse_lib=$(CURDIR)/SuiteSparse/lib/libsuitesparseconfig.$(shared_lib_ext)
 evsl_lib=$(CURDIR)/EVSL_$(EVSL_VER)/liblancheb.a
 
 #Variables to patch over EVSL 1.0 build system
@@ -60,7 +68,7 @@ $(srccache)/evsl.zip:
 
 EVSL_$(EVSL_VER): $(srccache)/evsl.zip
 	unzip -n $(srccache)/evsl.zip
-	cd EVSL_$(EVSL_VER) && mv makefile.in{,.orig} && mv makefile.in{_MacOS.example,}
+	cd EVSL_$(EVSL_VER) && mv makefile.in makefile.orig && mv $(evsl_infile) makefile.in
 
 $(evsl_lib): EVSL_$(EVSL_VER)
 	cd EVSL_$(EVSL_VER) && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)"
