@@ -17,7 +17,7 @@ os:=$(shell uname -s)
 ifeq ($(os),Linux)
 	shared_lib_ext=so
 	evsl_infile=makefile.in_Linux.example
-	LAPACK+=-lm
+	LAPACK+=-lm -lrt
 	LDFLAGS+=-Wl,-rpath=$(CURDIR)/SuiteSparse/lib -Wl,-rpath=$(CURDIR)/lib -Wl,--no-undefined
 endif
 ifeq ($(os),Darwin)
