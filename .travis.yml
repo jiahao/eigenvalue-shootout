@@ -20,4 +20,5 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update             ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc elinks ; fi
 
-script: make -C external CC=$CC
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make -C external CC=$CC LAPACK="-L/usr/lib/lapack -llapack"; else make -C external CC=$CC; fi
