@@ -1,6 +1,6 @@
 CC=gcc
 FC=gfortran
-CFLAGS=-O3 -Wall
+CFLAGS=-O3 -Wall -fPIC
 FFLAGS=$(CFLAGS)
 
 #How to link LAPACK library
@@ -73,20 +73,25 @@ EVSL_$(EVSL_VER): $(srccache)/evsl.zip
 $(evsl_lib): EVSL_$(EVSL_VER)
 	cd EVSL_$(EVSL_VER) && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)"
 
-EVSL_1.0/TESTS_LAP/LapPLanR.ex: $(evsl_lib)
-	cd EVSL_1.0/TESTS_LAP && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" -f makefileP LapPLanR.ex && ./LapPLanR.ex
+EVSL_1.0/TESTS_Lap/LapPLanR.ex: $(evsl_lib)
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+		-f makefileP LapPLanR.ex && ./LapPLanR.ex
 
-EVSL_1.0/TESTS_LAP/LapPLanN.ex: $(evsl_lib)
-	cd EVSL_1.0/TESTS_LAP && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" -f makefileP LapPLanN.ex && ./LapPlanN.ex
+EVSL_1.0/TESTS_Lap/LapPLanN.ex: $(evsl_lib)
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+		-f makefileP LapPLanN.ex && ./LapPlanN.ex
 
-EVSL_1.0/TESTS_LAP/LapPSI.ex: $(evsl_lib)
-	cd EVSL_1.0/TESTS_LAP && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" -f makefileP LapPSI.ex   && ./LapPSI.ex
+EVSL_1.0/TESTS_Lap/LapPSI.ex: $(evsl_lib)
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+		-f makefileP LapPSI.ex   && ./LapPSI.ex
 
-EVSL_1.0/TESTS_LAP/LapRLanR.ex: $(evsl_lib) $(suitesparse_lib)
-	cd EVSL_1.0/TESTS_LAP && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanR.ex && ./LapRLanR.ex
+EVSL_1.0/TESTS_Lap/LapRLanR.ex: $(evsl_lib) $(suitesparse_lib)
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+		EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanR.ex && ./LapRLanR.ex
 
-EVSL_1.0/TESTS_LAP/LapRLanN.ex: $(evsl_lib) $(suitesparse_lib)
-	cd EVSL_1.0/TESTS_LAP && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanN.ex && ./LapRLanN.ex
+EVSL_1.0/TESTS_Lap/LapRLanN.ex: $(evsl_lib) $(suitesparse_lib)
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
+		EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanN.ex && ./LapRLanN.ex
 
-evsl_tested: $(evsl_lib) EVSL_1.0/TESTS_LAP/LapPLanR.ex EVSL_1.0/TESTS_LAP/LapPLanN.ex EVSL_1.0/TESTS_LAP/LapPSI.ex EVSL_1.0/TESTS_LAP/LapRLanR.ex EVSL_1.0/TESTS_LAP/LapRLanN.ex
+evsl_tested: $(evsl_lib) EVSL_1.0/TESTS_Lap/LapPLanR.ex EVSL_1.0/TESTS_Lap/LapPLanN.ex EVSL_1.0/TESTS_Lap/LapPSI.ex EVSL_1.0/TESTS_Lap/LapRLanR.ex EVSL_1.0/TESTS_Lap/LapRLanN.ex
 
