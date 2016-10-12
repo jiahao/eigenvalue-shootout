@@ -6,5 +6,6 @@ addons:
     packages:
       - elinks
       - gfortran
+      - liblapack3
 
 script: make -C external
