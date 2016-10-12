@@ -19,10 +19,12 @@ ifeq ($(os),Linux)
 	evsl_infile=makefile.in_Linux.example
 	LAPACK+=-lm -lrt
 	LDFLAGS+=-Wl,-rpath=$(CURDIR)/SuiteSparse/lib -Wl,-rpath=$(CURDIR)/lib -Wl,--no-undefined
+	linklancheb=-shared -Wl,-soname,liblancheb.so.1 -o ../../lib/liblancheb.so
 endif
 ifeq ($(os),Darwin)
 	shared_lib_ext=dylib
 	evsl_infile=makefile.in_MacOS.example
+	linklancheb=-dynamiclib -install_name "liblancheb.1.dylib" -current_version 1.0.0 -compatibility_version 1.0 -o ../../lib/liblancheb.dylib
 endif
 
 srccache = srccache
@@ -76,7 +78,7 @@ EVSL_$(EVSL_VER): $(srccache)/evsl.zip
 $(evsl_lib): EVSL_$(EVSL_VER)
 	mkdir -p lib
 	cd EVSL_$(EVSL_VER)/SRC && make CC="$(CC)" LINK="$(CC)" FLAGS="$(CFLAGS) $(LDFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)" && \
-		$(CC) $(LDFLAGS) -shared -Wl,-soname,liblancheb.so.1 -o ../../lib/liblancheb.so *.o $(LAPACK) $(BLAS)
+		$(CC) $(LDFLAGS) $(linklancheb) *.o $(LAPACK) $(BLAS)
 
 EVSL_1.0/TESTS_Lap/LapPLanR.ex: $(evsl_lib)
 	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC)" LIBLAPACK="$(LAPACK) $(BLAS)" \
