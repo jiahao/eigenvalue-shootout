@@ -93,7 +93,7 @@ EVSL_1.0/TESTS_Lap/LapPSI.ex: $(evsl_lib)
 		-f makefileP LapPSI.ex   && ./LapPSI.ex
 
 EVSL_1.0/TESTS_Lap/LapRLanR.ex: $(evsl_lib) $(suitesparse_lib)
-	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC) $(LDFLAGS) -Wl,--no-undefined" LIBLAPACK="$(LAPACK) $(BLAS)" \
+	cd EVSL_1.0/TESTS_Lap && make CC="$(CC)" FLAGS="$(CFLAGS)" LINK="$(CC) $(LDFLAGS)" LIBLAPACK="$(LAPACK) $(BLAS)" \
 		EXTLIB="$(EXTLIB)" LIB_UMF="$(LIB_UMF)" -f makefileR LapRLanR.ex && ./LapRLanR.ex
 
 EVSL_1.0/TESTS_Lap/LapRLanN.ex: $(evsl_lib) $(suitesparse_lib)
